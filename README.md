@@ -44,6 +44,18 @@ Export secrets to a `.env` file:
 envault export > .env
 ```
 
+List all secret keys stored in the current vault:
+
+```bash
+envault list
+```
+
+Delete a secret:
+
+```bash
+envault delete DATABASE_URL
+```
+
 Access is scoped per directory — secrets stored in `~/projects/api` are not accessible from `~/projects/frontend`.
 
 ---
