@@ -31,6 +31,13 @@ def _iter_projects() -> Iterator[str]:
             yield child.name
 
 
+def _key_matches(key: str, pattern: str, compiled: re.Pattern | None) -> bool:
+    """Return True if *key* matches *pattern* (glob) or *compiled* regex."""
+    if compiled is not None:
+        return bool(compiled.search(key))
+    return fnmatch.fnmatch(key, pattern)
+
+
 def search_keys(
     pattern: str,
     *,
@@ -51,12 +58,7 @@ def search_keys(
 
     for proj in projects:
         for key in list_secrets(proj):
-            matched = (
-                bool(compiled.search(key))
-                if compiled
-                else fnmatch.fnmatch(key, pattern)
-            )
-            if matched:
+            if _key_matches(key, pattern, compiled):
                 results.append(SearchResult(project=proj, key=key))
 
     return results
