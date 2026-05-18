@@ -32,7 +32,9 @@ def cmd_create(project: str, label: str | None, snapshot_password: str | None) -
 
 @snapshot_group.command("list")
 @click.argument("project")
-def cmd_list(project: str) -> None:
+@click.option("--verbose", "-v", is_flag=True, default=False,
+              help="Show additional snapshot metadata.")
+def cmd_list(project: str, verbose: bool) -> None:
     """List available snapshots for PROJECT."""
     snaps = list_snapshots(project)
     if not snaps:
@@ -40,7 +42,12 @@ def cmd_list(project: str) -> None:
         return
     for s in snaps:
         label = s.get("label") or "(no label)"
-        click.echo(f"{s['file']}  ts={s['ts']}  label={label}")
+        line = f"{s['file']}  ts={s['ts']}  label={label}"
+        if verbose:
+            key_count = s.get("key_count")
+            if key_count is not None:
+                line += f"  keys={key_count}"
+        click.echo(line)
 
 
 @snapshot_group.command("restore")
