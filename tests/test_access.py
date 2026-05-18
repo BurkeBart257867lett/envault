@@ -83,3 +83,13 @@ def test_access_file_permissions(access_dir, tmp_path):
     access_file = Path(access_dir) / ACCESS_FILE
     mode = oct(os.stat(access_file).st_mode)[-3:]
     assert mode == "600"
+
+
+def test_revoke_nonexistent_key_does_not_raise(access_dir, tmp_path):
+    """Revoking access for a key that was never granted should not raise an error."""
+    allowed = str(tmp_path / "project_a")
+    Path(allowed).mkdir()
+    # Should complete without raising any exception
+    revoke_access("NEVER_GRANTED", allowed, directory=access_dir)
+    # No access rules exist, so access remains open
+    assert is_allowed("NEVER_GRANTED", requesting_dir=allowed, directory=access_dir) is True
